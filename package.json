@@ -1,0 +1,12 @@
+{
+  "name": "todos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "b": "yarn --cwd ./backend",
+    "f": "yarn --cwd ./frontend",
+    "b:dev": "yarn b dev"
+  },
+  "dependencies": {}
+}
