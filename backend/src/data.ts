@@ -1,8 +1,8 @@
 const todos =  [
     {
       id: 1,
-      category: "Food",
-      description: "Go for lunch at 12pm"
+      description: "Make blueberry pancakes for breakfast",
+      complete: false
     }
 ];
 

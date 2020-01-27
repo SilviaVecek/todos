@@ -5,32 +5,34 @@ const Joi = require('@hapi/joi');
 const app = express();
 app.use(express.json());
 
+// Get all todos
 app.get('/api/todos', (req, res) => {
     res.status(200).send({
         todos: todos
     })
 })
 
+// Get specific todo
 app.get('/api/todos/:id', (req, res) => {
     const todo = todos.find(c => c.id === parseInt(req.params.id));
     if (!todo) return res.status(404).send("No todos with this ID");
-    res.send(todo)
+    res.send(todo);
 })
 
-// Add
+// Add todo
 app.post('/api/todos', (req, res) => {
     const { error } = validateTodos(req.body)
     if (error) return res.status(400).send(error.details[0].message);
     const todo = {
         id: todos.length + 1,
-        category: req.body.category,
+        complete: req.body.complete,
         description: req.body.description,
     }
     todos.push(todo);
     res.send(todo);
 })
 
-// Delete
+// Delete todo
 app.delete('/api/todos/:id', (req, res) => {
     const todo = todos.find(c => c.id === parseInt(req.params.id));
     if (!todo) return res.status(404).send("No todos with this ID");
@@ -39,36 +41,36 @@ app.delete('/api/todos/:id', (req, res) => {
     res.send(todo);
 })
 
-//Update
+//Update todo
 app.put('/api/todos/:id', (req, res) => {
     const todo = todos.find(c => c.id === parseInt(req.params.id));
     if (!todo) return res.status(404).send("No todos with this ID");
-    const { error } = validateTodos(req.body)
+    const { error } = validateTodos(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    todo.category = req.body.category
-    todo.description = req.body.description
-    res.send(todo)
+    todo.complete = req.body.complete;
+    todo.description = req.body.description;
+    res.send(todo);
 })
 
-// Update Partial
+// Update todo partially
 app.patch('/api/todos/:id', (req, res) => {
     const todo = todos.find(c => c.id === parseInt(req.params.id));
     if (!todo) return res.status(404).send("No todos with this ID");
-    if ('category' in req.body) todo.category = req.body.category
-    if ('description' in req.body) todo.description = req.body.description
+    if ('complete' in req.body) todo.complete = req.body.complete;
+    if ('description' in req.body) todo.description = req.body.description;
     res.send(todo)
 })
 
 
 function validateTodos(todo) {
     const schema = Joi.object({
-        category: Joi.string().min(3).required(),
         description: Joi.string().min(3).required(),
+        complete: Joi.boolean()
     });
     return schema.validate(todo)
 }
 
-const PORT = process.env.port || 3000;
+const PORT = process.env.port || 8080;
 
 app.listen(PORT, () => {
     console.log(`server running on port http://localhost:${PORT}`)
