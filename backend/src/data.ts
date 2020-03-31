@@ -1,4 +1,4 @@
-const todos =  [
+export const todos =  [
     {
       id: 1,
       description: "Make blueberry pancakes for breakfast",
@@ -6,4 +6,9 @@ const todos =  [
     }
 ];
 
-export default todos;
+export const loginDatabase = [
+  {
+    email: 'zdenek.vecek@gmail.com',
+    password: 'Bubbles11'
+  }
+]

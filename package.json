@@ -6,7 +6,8 @@
   "scripts": {
     "b": "yarn --cwd ./backend",
     "f": "yarn --cwd ./frontend",
-    "b:dev": "yarn b dev"
+    "b:dev": "yarn b dev",
+    "f:dev": "yarn f start"
   },
   "dependencies": {}
 }

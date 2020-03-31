@@ -1,14 +1,29 @@
 import express from 'express';
-import todos from './data';
+import { todos, loginDatabase } from './data';
+import cookieParser from 'cookie-parser';
 
 const Joi = require('@hapi/joi');
 const app = express();
+const jwt = require('jsonwebtoken');
 app.use(express.json());
+app.use(cookieParser());
+
+const verifyToken = ( req, res ) => {
+    if (!req.cookies.ILOVEZENNY) {
+        res.sendStatus(403);
+    };
+}
 
 // Get all todos
-app.get('/api/todos', (req, res) => {
-    res.status(200).send({
-        todos: todos
+app.get('/api/todos', verifyToken, (req, res) => {
+    jwt.verify(req.cookies.ILOVEZENNY, 'privatekey', (err, authorizedData) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            res.status(200).send({
+                todos: todos
+            })
+        }
     })
 })
 
@@ -61,6 +76,24 @@ app.patch('/api/todos/:id', (req, res) => {
     res.send(todo)
 })
 
+// user login
+app.post('/api/login/', (req, res) => {
+    const { error } = validateLogin(req.body);
+    const { email, password } = req.body;
+    if (error) return res.status(400).send(error.details[0].message);
+    const validUser = loginDatabase.find(data => {
+        return (data.email === email && data.password === password) 
+    })
+    if (validUser) {
+        jwt.sign({ email } , 'privatekey', { expiresIn: '10h' },(err, token) => {
+            if(err) { console.log(err) } 
+            res.cookie('ILOVEZENNY', token, { httpOnly: true });   
+            res.send({success: true, JWT: token});
+        });
+    } else {
+        res.send({success: false})
+    }
+});
 
 function validateTodos(todo) {
     const schema = Joi.object({
@@ -68,6 +101,14 @@ function validateTodos(todo) {
         complete: Joi.boolean()
     });
     return schema.validate(todo)
+}
+
+function validateLogin(details) {
+    const schema = Joi.object({
+        email: Joi.string().required(),
+        password: Joi.string().required(),
+    })
+    return schema.validate(details)
 }
 
 const PORT = process.env.port || 8080;
